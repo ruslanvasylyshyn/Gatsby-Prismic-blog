@@ -1,122 +1,133 @@
 import * as React from "react"
-import { Link } from "gatsby"
-import { StaticImage } from "gatsby-plugin-image"
+import { useStaticQuery, graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import * as styles from "../components/index.module.css"
 
-const links = [
-  {
-    text: "Tutorial",
-    url: "https://www.gatsbyjs.com/docs/tutorial",
-    description:
-      "A great place to get started if you're new to web development. Designed to guide you through setting up your first Gatsby site.",
-  },
-  {
-    text: "Examples",
-    url: "https://github.com/gatsbyjs/gatsby/tree/master/examples",
-    description:
-      "A collection of websites ranging from very basic to complex/complete that illustrate how to accomplish specific tasks within your Gatsby sites.",
-  },
-  {
-    text: "Plugin Library",
-    url: "https://www.gatsbyjs.com/plugins",
-    description:
-      "Learn how to add functionality and customize your Gatsby site or app with thousands of plugins built by our amazing developer community.",
-  },
-  {
-    text: "Build and Host",
-    url: "https://www.gatsbyjs.com/cloud",
-    description:
-      "Now you’re ready to show the world! Give your Gatsby site superpowers: Build and host on Gatsby Cloud. Get started for free!",
-  },
-]
+const IndexPage = () => {
+  const posts = useStaticQuery(
+    graphql`
+      query {
+        allPrismicPag {
+          nodes {
+            uid
+            data {
+              page_title {
+                text
+              }
+              sub_title {
+                text
+              }
+              image {
+                url
+              }
+              author {
+                author_name {
+                  text
+                }
+                author_photo {
+                  url
+                }
+              }
+              date
+            }
+          }
+        }
+      }
+    `
+  )
 
-const samplePageLinks = [
-  {
-    text: "Page 2",
-    url: "page-2",
-    badge: false,
-    description:
-      "A simple example of linking to another page within a Gatsby site",
-  },
-  { text: "TypeScript", url: "using-typescript" },
-  { text: "Server Side Rendering", url: "using-ssr" },
-  { text: "Deferred Static Generation", url: "using-dsg" },
-]
+  function featuredDateFormat(date) {
+    let mostRecentDate = date.split('-');
+    let year = mostRecentDate[0];
+    mostRecentDate.push(year);
+    mostRecentDate.shift();
+    const months = 'January, February, March, April, May, June, July, August, September, October, November, December';
+    const monthsArray = months.split(',');
+    if(mostRecentDate[0][0] === '0'){
+      mostRecentDate[0] = mostRecentDate[0][1];
+    };
+    let finalDate = `${monthsArray[mostRecentDate[0]]} ${mostRecentDate[1]}, ${mostRecentDate[2]}`;
+    return finalDate;
+  }
 
-const moreLinks = [
-  { text: "Join us on Discord", url: "https://gatsby.dev/discord" },
-  {
-    text: "Documentation",
-    url: "https://gatsbyjs.com/docs/",
-  },
-  {
-    text: "Starters",
-    url: "https://gatsbyjs.com/starters/",
-  },
-  {
-    text: "Showcase",
-    url: "https://gatsbyjs.com/showcase/",
-  },
-  {
-    text: "Contributing",
-    url: "https://www.gatsbyjs.com/contributing/",
-  },
-  { text: "Issues", url: "https://github.com/gatsbyjs/gatsby/issues" },
-]
+  function mostRecentDateFormat(date) {
+    let mostRecentDate = date.split('-');
+    let year = mostRecentDate[0];
+    mostRecentDate.push(year);
+    mostRecentDate.shift();
+    if(mostRecentDate[0][0] === '0'){
+      mostRecentDate[0] = mostRecentDate[0][1];
+    };
+    let finalDate = `${mostRecentDate[0]}/${mostRecentDate[1]}/${mostRecentDate[2]}`;
+    return finalDate;
+  }
 
-const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
-
-const IndexPage = () => (
+  return(
   <Layout>
     <Seo title="Home" />
-    <div className={styles.textCenter}>
-      <StaticImage
-        src="../images/example.png"
-        loading="eager"
-        width={64}
-        quality={95}
-        formats={["auto", "webp", "avif"]}
-        alt=""
-        style={{ marginBottom: `var(--space-3)` }}
-      />
-      <h1>
-        Welcome to <b>Gatsby!</b>
-      </h1>
-      <p className={styles.intro}>
-        <b>Example pages:</b>{" "}
-        {samplePageLinks.map((link, i) => (
-          <React.Fragment key={link.url}>
-            <Link to={link.url}>{link.text}</Link>
-            {i !== samplePageLinks.length - 1 && <> · </>}
-          </React.Fragment>
-        ))}
-        <br />
-        Edit <code>src/pages/index.js</code> to update this page.
-      </p>
-    </div>
+    <h2 className={styles.categoryName}>Featured Posts</h2>
+    <div className={styles.categoryRectangle}></div>
     <ul className={styles.list}>
-      {links.map(link => (
-        <li key={link.url} className={styles.listItem}>
-          <a
-            className={styles.listItemLink}
-            href={`${link.url}${utmParameters}`}
-          >
-            {link.text} ↗
-          </a>
-          <p className={styles.listItemDescription}>{link.description}</p>
-        </li>
-      ))}
+      {posts.allPrismicPag.nodes.map((post, i) => {
+        if(i=== 5 || i=== 4){
+          return(
+            <li key={post.uid} className={styles.listItem}>
+                <div style={{
+                  backgroundImage: `url("${post.data.image.url}")`,
+                }}
+                className={styles.listItemWrapper}
+                >
+                  <h3 className={styles.listItemHeader}>{post.data.page_title.text}</h3>
+                  <p className={styles.listItemDescription}>{post.data.sub_title.text}</p>
+                  <div className={styles.listItemAuthorDate}>
+                    <div className={styles.listItemAuthor}>
+                      <img 
+                        src={post.data.author[0].author_photo.url} 
+                        alt={post.data.author[0].author_name.text} 
+                      />
+                      <span>{post.data.author[0].author_name.text}</span>
+                    </div>
+                    <span className={styles.listItemDate}>{featuredDateFormat(post.data.date)}</span>
+                  </div>
+                </div>
+            </li>
+          )  
+        }})}
     </ul>
-    {moreLinks.map((link, i) => (
-      <React.Fragment key={link.url}>
-        <a href={`${link.url}${utmParameters}`}>{link.text}</a>
-        {i !== moreLinks.length - 1 && <> · </>}
-      </React.Fragment>
-    ))}
+
+    <h2 className={styles.categoryName}>Most Recent</h2>
+    <div className={styles.categoryRectangle}></div>
+    <ul className={styles.mostRecentlist}>
+      {posts.allPrismicPag.nodes.map((post, i) => {
+        while (i> 5 || i<4){
+          return(
+            <li key={post.uid} className={styles.mostRecentListItem}>
+                <div style={{
+                  backgroundImage: `url("${post.data.image.url}")`,
+                }}
+                className={styles.mostRecentItemWrapper}
+                >
+                  <h3 className={styles.mostRecentItemHeader}>{post.data.page_title.text}</h3>
+                  <p className={styles.mostRecentItemDescription}>{post.data.sub_title.text}</p>
+                  <div className={styles.mostRecentItemAuthorDate}>
+                    <div className={styles.mostRecentItemAuthor}>
+                      <img 
+                        src={post.data.author[0].author_photo.url} 
+                        alt={post.data.author[0].author_name.text} 
+                      />
+                      <span>{post.data.author[0].author_name.text}</span>
+                    </div>
+                    <span className={styles.mostRecentItemDate}>{mostRecentDateFormat(post.data.date)}</span>
+                  </div>
+                </div>
+            </li>
+          )  
+        }})}
+    </ul>
   </Layout>
 )
+}
 
 export default IndexPage
