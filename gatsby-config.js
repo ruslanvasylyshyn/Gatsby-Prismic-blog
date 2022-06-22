@@ -14,7 +14,7 @@ module.exports = {
       resolve: `gatsby-source-prismic`,
       options: {
         repositoryName: `gatsby-prismic-project`,
-        customTypesApiToken: process.env.PRISMIC_CUSTOM_TYPES_API_TOKEN,
+        customTypesApiToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoibWFjaGluZTJtYWNoaW5lIiwiZGJpZCI6ImdhdHNieS1wcmlzbWljLXByb2plY3QtZTIyOTMxNGItNjlhNi00NWQ5LTlkNGItZTY0ZDkzYmE2NWRjXzQiLCJkYXRlIjoxNjU1NzYyMjI3LCJkb21haW4iOiJnYXRzYnktcHJpc21pYy1wcm9qZWN0IiwiaWF0IjoxNjU1NzYyMjI3fQ.kzjyD0Sx6pnWr-jJyiTt-dUT-nxEdo3FeaM8ba68q3k',
       },
     },
     `gatsby-plugin-react-helmet`,
